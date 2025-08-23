@@ -1,0 +1,35 @@
+{
+  "name": "blood-bank-management-system",
+  "version": "1.0.0",
+  "description": "The Blood Bank Management System is a platform that connects donors, receivers (patients/hospitals), and blood bank administrators.\r It enables:\r Donors to book appointments and track donation history\r Receivers to request blood units and monitor request status\r Admins to manage inventory, verify requests, and generate reports\r This project aims to streamline blood donation and distribution, ensuring timely availability of blood for patients in need.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node backend/server.js",
+    "dev": "nodemon backend/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AryanD-06/Blood-bank-management-system.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/AryanD-06/Blood-bank-management-system/issues"
+  },
+  "homepage": "https://github.com/AryanD-06/Blood-bank-management-system#readme",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "express-async-handler": "^1.2.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.18.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
