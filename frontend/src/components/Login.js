@@ -18,11 +18,11 @@ function Login() {
 
       // ✅ Redirect based on role
       if (res.data.role === "donor") {
-        navigate("/donor");
+        navigate("/");
       } else if (res.data.role === "receiver") {
-        navigate("/receiver");
+        navigate("/");
       } else if (res.data.role === "admin") {
-        navigate("/admin");
+        navigate("/");
       } else {
         navigate("/"); // fallback
       }
