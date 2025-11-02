@@ -26,6 +26,7 @@ export const registerUser = async (req, res) => {
     await user.save();
 
     // 4️⃣ If donor → validate & create donor profile
+    let donor = null;
     if (role === "donor") {
       const age = Number(otherFields.age);
       const weight = Number(otherFields.weight);
@@ -45,7 +46,7 @@ export const registerUser = async (req, res) => {
         });
       }
 
-      const donor = new Donor({
+      donor = new Donor({
         user: user._id,
         bloodGroup: otherFields.bloodGroup,
         age,
@@ -59,7 +60,17 @@ export const registerUser = async (req, res) => {
       await donor.save();
     }
 
-    res.status(201).json({ message: "Registration successful", user });
+    // ✅ sanitize user object (do not return password)
+    const safeUser = { id: user._id, name: user.name, email: user.email, role: user.role };
+    const donorInfo = donor
+      ? {
+          id: donor._id,
+          bloodGroup: donor.bloodGroup,
+          eligible: donor.eligible,
+        }
+      : null;
+
+    res.status(201).json({ message: "Registration successful", user: safeUser, donor: donorInfo });
   } catch (err) {
     console.error("❌ Registration Error:", err);
     res.status(400).json({ error: err.message });

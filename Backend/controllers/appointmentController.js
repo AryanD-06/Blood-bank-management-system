@@ -125,7 +125,7 @@ export const approveDonation = async (req, res) => {
     // Step 4: Update inventory
     const inventoryUpdate = await Inventory.findOneAndUpdate(
       { bloodGroup: donor.bloodGroup },
-      { $inc: { quantity: 1 } },
+      { $inc: { units: 1 } },
       { upsert: true, new: true, runValidators: true }
     );
 

@@ -5,7 +5,16 @@ import Inventory from "../models/Inventory.js"; // adjust path if different
 // Create new request
 export const createRequest = async (req, res) => {
   try {
-    const { bloodGroup, units, urgency,location } = req.body;
+    const { bloodGroup, units, urgency, location } = req.body;
+
+    // Normalize location to GeoJSON Point if coordinates provided without type
+    let normalizedLocation = undefined;
+    if (location && Array.isArray(location.coordinates)) {
+      normalizedLocation = {
+        type: location.type || "Point",
+        coordinates: location.coordinates,
+      };
+    }
     // Add date or default to now
     const request = new Request({
       receiver: req.user.id,
@@ -13,7 +22,7 @@ export const createRequest = async (req, res) => {
       units,
       urgency,
       date: new Date(),
-      location,
+      location: normalizedLocation,
     });
     await request.save();
     res.status(201).json({ message: "Blood request created", request });
