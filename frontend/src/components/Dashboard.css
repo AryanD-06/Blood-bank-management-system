@@ -1,0 +1,43 @@
+.dashboard-container {
+  display: flex;
+  flex-direction: column; /* Arrange cards vertically */
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 2rem;
+  gap: 2rem; /* Add space between the cards */
+}
+
+/* Base card styles */
+.card {
+  max-width: 800px;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Action button styles from before */
+.action-btn {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.action-btn:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.badge {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.card-title {
+  font-weight: 700;
+}
+
+/* Styles for the new info card list items */
+.info-card .list-group-item {
+  background-color: transparent; /* Make list items transparent */
+}

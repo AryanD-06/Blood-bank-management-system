@@ -1,0 +1,114 @@
+.manage-requests-container {
+  background-color: #ffffff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  font-family: 'Inter', sans-serif; /* Using a clean, modern font */
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.header h3 {
+  margin: 0;
+  font-weight: 600;
+  color: #343a40;
+}
+
+/* --- Table Styles --- */
+.requests-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.requests-table th,
+.requests-table td {
+  padding: 1rem 0.75rem;
+  text-align: left;
+  vertical-align: middle;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.requests-table th {
+  font-weight: 500;
+  color: #6c757d;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+}
+
+.requests-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+/* --- Status Badges --- */
+.status-badge {
+  padding: 0.3rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.status-pending {
+  background-color: #fff3cd; /* Yellow for pending */
+  color: #856404;
+}
+
+.status-completed {
+  background-color: #d4edda; /* Green for completed/approved */
+  color: #155724;
+}
+
+.status-rejected {
+  background-color: #f8d7da; /* Red for rejected */
+  color: #721c24;
+}
+
+/* --- Action Buttons --- */
+.action-buttons button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-width: 100px; /* Ensures buttons have same width */
+  justify-content: center;
+}
+
+.action-buttons button:disabled {
+  cursor: not-allowed;
+}
+
+/* --- Utility & State Styles --- */
+.loading-container,
+.error-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem;
+  color: #6c757d;
+}
+
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(0, 0, 0, 0.1);
+  border-left-color: #0d6efd; /* Blue spinner */
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.button-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-left-color: #ffffff;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

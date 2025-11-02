@@ -1,0 +1,65 @@
+/* ... (keep all the existing styles for .inventory-dashboard, .loader, etc.) ... */
+
+/* --- NEW: Card Grid and Card Styles --- */
+.card-grid {
+  display: grid;
+  /* This creates a responsive grid that fits as many cards as possible, 
+     each with a minimum width of 220px. */
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.5rem; /* Space between cards */
+  margin-top: 1.5rem;
+}
+
+.blood-card {
+  background-color: #ffffff;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: left;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.blood-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.blood-type-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.unit-count {
+  font-size: 3rem;
+  font-weight: 600;
+  color: #212529;
+  line-height: 1;
+}
+
+.unit-label {
+  font-size: 0.9rem;
+  color: #6c757d;
+  margin-top: 0.25rem;
+}
+
+/* Add this new style to your InventoryDashboard.css file */
+
+.card-footer {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #f1f1f1;
+  font-size: 0.8rem;
+  color: #6c757d;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}

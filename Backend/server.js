@@ -7,6 +7,9 @@ import authRoutes from "./routes/authRoutes.js";
 import appointmentRoutes from "./routes/appointmentRoutes.js";
 import requestRoutes from "./routes/requestRoutes.js";
 import inventoryRoutes from "./routes/inventoryRoutes.js";
+import donorRoutes from "./routes/donorRoutes.js";
+
+
 
 // Load environment variables
 dotenv.config();
@@ -44,6 +47,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/appointments", appointmentRoutes);
 app.use("/api/requests", requestRoutes);
 app.use("/api/inventory", inventoryRoutes);
+app.use("/api/donor", donorRoutes);
 
 // Start server
 const PORT = process.env.PORT || 5000;

@@ -9,5 +9,7 @@ const router = express.Router();
 router.post("/update", authMiddleware,authorizeRoles("admin"), updateInventory);
 router.get("/get", authMiddleware,authorizeRoles("admin"), getInventory);
 router.post("/approve/:requestId", authMiddleware,authorizeRoles("admin"), approveRequest);
+//router.get("/get", authMiddleware,authorizeRoles("admin"), getInventory);
+
 
 export default router;

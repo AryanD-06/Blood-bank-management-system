@@ -1,10 +1,20 @@
 import Request from "../models/Request.js";
+import User from "../models/User.js";       // adjust path if different
+import Inventory from "../models/Inventory.js"; // adjust path if different
 
 // Create new request
 export const createRequest = async (req, res) => {
   try {
-    const { bloodGroup, units, urgency } = req.body;
-    const request = new Request({ receiver: req.user.id, bloodGroup, units, urgency });
+    const { bloodGroup, units, urgency,location } = req.body;
+    // Add date or default to now
+    const request = new Request({
+      receiver: req.user.id,
+      bloodGroup,
+      units,
+      urgency,
+      date: new Date(),
+      location,
+    });
     await request.save();
     res.status(201).json({ message: "Blood request created", request });
   } catch (err) {
@@ -29,5 +39,25 @@ export const getAllRequests = async (req, res) => {
     res.json(requests);
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+};
+
+// ✅ NEW: Dashboard stats for Admin
+export const getStats = async (req, res) => {
+  try {
+    const donors = await User.countDocuments({ role: "donor" });
+    const totalUnits = await Inventory.aggregate([
+      { $group: { _id: null, total: { $sum: "$units" } } },
+    ]);
+    const pending = await Request.countDocuments({ status: "pending" });
+
+    res.json({
+      donors,
+      units: totalUnits[0]?.total || 0,
+      pending,
+    });
+  } catch (err) {
+    console.error("Stats error:", err);
+    res.status(500).json({ error: "Failed to fetch stats" });
   }
 };
