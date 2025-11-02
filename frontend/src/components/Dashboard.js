@@ -12,6 +12,8 @@ function Dashboard() {
     units: 0,
     pending: 0,
   });
+  const [receiverInventory, setReceiverInventory] = useState([]);
+  const [invError, setInvError] = useState("");
 
   useEffect(() => {
     // Fetch real stats only if admin
@@ -31,7 +33,24 @@ function Dashboard() {
         }
       }
     };
+    const fetchReceiverInventory = async () => {
+      if (role === "receiver" && token) {
+        try {
+          const res = await api.get("/inventory/public", {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const sorted = res.data
+            .slice()
+            .sort((a, b) => a.bloodGroup.localeCompare(b.bloodGroup));
+          setReceiverInventory(sorted);
+        } catch (err) {
+          console.error("Failed to load receiver inventory", err);
+          setInvError("Unable to load inventory right now.");
+        }
+      }
+    };
     fetchStats();
+    fetchReceiverInventory();
   }, [role, token]);
 
   const renderActions = () => {
@@ -53,8 +72,11 @@ function Dashboard() {
             <Link to="/receiver/request" className="btn btn-danger m-2">
               Request Blood
             </Link>
-            <Link to="/receiver/requests" className="btn btn-outline-danger m-2">
+            <Link to="/receiver/myrequests" className="btn btn-outline-danger m-2">
               My Requests
+            </Link>
+            <Link to="/receiver/inventory" className="btn btn-outline-danger m-2">
+              View Full Inventory
             </Link>
           </>
         );
@@ -130,6 +152,31 @@ function Dashboard() {
         <h2 className="mb-3 text-danger">Welcome, {name}!</h2>
         <h5 className="mb-3">Role: {role}</h5>
         {renderActions()}
+
+        {role === "receiver" && (
+          <div className="mt-4">
+            <h4 className="text-danger mb-3">Available Inventory</h4>
+            {invError ? (
+              <p className="text-muted">{invError}</p>
+            ) : receiverInventory.length === 0 ? (
+              <p className="text-muted">No inventory data available.</p>
+            ) : (
+              <div className="row g-3 justify-content-center">
+                {receiverInventory.map((it) => (
+                  <div className="col-6 col-md-3 col-lg-2" key={it._id}>
+                    <div className="card border-0 shadow-sm">
+                      <div className="card-body p-3">
+                        <h6 className="m-0 text-danger">{it.bloodGroup}</h6>
+                        <div className="fw-bold" style={{ fontSize: "1.25rem" }}>{it.units}</div>
+                        <div className="text-muted small">units</div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

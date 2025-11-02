@@ -12,6 +12,7 @@ const donorSchema = new mongoose.Schema({
   weight: { type: Number, required: true },
   hemoglobinLevel: { type: Number, required: true },
   diseases: [{ type: String }],
+  lastDonationDate: { type: Date },
   eligible: { type: Boolean, default: false },
   location: {
     type: {
@@ -25,7 +26,5 @@ const donorSchema = new mongoose.Schema({
     },
   },
 });
-
-donorSchema.index({ user: 1 }, { unique: true });
 
 export default mongoose.model("Donor", donorSchema);

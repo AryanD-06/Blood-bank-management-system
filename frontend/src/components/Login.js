@@ -12,16 +12,13 @@ function Login() {
     try {
       const res = await api.post("/auth/login", { email, password });
 
-      // Save token & role
+      // Save auth and user info
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("role", res.data.role);
+      if (res.data.name) localStorage.setItem("name", res.data.name);
 
-      // Redirect user by role
-      const role = res.data.role;
-      if (role === "donor") navigate("/");
-      else if (role === "receiver") navigate("/");
-      else if (role === "admin") navigate("/");
-      else navigate("/");
+      // Redirect to dashboard
+      navigate("/");
     } catch (err) {
       alert("Login failed: " + (err.response?.data?.message || err.message));
     }

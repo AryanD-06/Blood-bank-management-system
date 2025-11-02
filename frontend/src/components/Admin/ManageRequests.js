@@ -49,6 +49,7 @@ function ManageRequests() {
       try {
         setLoading(true);
         const res = await api.get("/requests", apiConfig);
+        console.log("[Frontend][Requests] fetched:", res.data);
         setRequests(res.data);
       } catch (err) {
         console.error("Error fetching requests", err);
@@ -75,7 +76,7 @@ function ManageRequests() {
     }
   };
 
-  const approve = (id) => updateRequestStatus(id, "completed", "approve");
+  const approve = (id) => updateRequestStatus(id, "approved", "approve");
   const reject = (id) => updateRequestStatus(id, "rejected", "reject");
 
   if (loading)

@@ -9,6 +9,7 @@ import MyAppointments from "./components/Donor/MyAppointments";
 
 import RequestBlood from "./components/Receiver/RequestBlood";
 import MyRequests from "./components/Receiver/MyRequests";
+import InventoryView from "./components/Receiver/InventoryView";
 
 import ManageAppointments from "./components/Admin/ManageAppointments";
 import ManageRequests from "./components/Admin/ManageRequests";
@@ -30,6 +31,7 @@ function App() {
         {/* Receiver */}
         <Route path="/receiver/request" element={<RequestBlood />} />
         <Route path="/receiver/myrequests" element={<MyRequests />} />
+        <Route path="/receiver/inventory" element={<InventoryView />} />
 
         {/* Admin */}
         <Route path="/admin/appointments" element={<ManageAppointments />} />

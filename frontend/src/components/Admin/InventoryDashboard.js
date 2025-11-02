@@ -59,13 +59,17 @@ function InventoryDashboard() {
     setLoading(true);
     setError("");
     try {
-      const res = await api.get("/inventory/get");
+      const token = localStorage.getItem("token");
+      const res = await api.get("/inventory/get", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      console.log("[Frontend][Inventory] fetched:", res.data);
       // Sort by blood group
       const sortedData = res.data.sort((a, b) => a.bloodGroup.localeCompare(b.bloodGroup));
       setInventory(sortedData);
     } catch (err) {
       setError("Failed to connect to the server. Please check your connection.");
-      console.error(err);
+      console.error("[Frontend][Inventory] error:", err);
     } finally {
       setLoading(false);
     }

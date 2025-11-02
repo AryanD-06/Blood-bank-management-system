@@ -8,17 +8,18 @@ import Donor from "../models/Donor.js";
 export const createAppointment = async (req, res) => {
   try {
     const { date, hospital, location } = req.body;
+    console.log("[Appt][create] payload:", { user: req.user?.id, date, hospital, hasLocation: !!location });
 
     if (!hospital || !location || !location.coordinates) {
+      console.warn("[Appt][create] missing fields", { hospitalPresent: !!hospital, locationPresent: !!location });
       return res.status(400).json({ error: "Hospital and location are required." });
     }
 
     // Fetch donor profile
     const donor = await Donor.findOne({ user: req.user.id });
     if (!donor) {
-      return res.status(404).json({
-        error: "Donor profile not found. Please complete registration first.",
-      });
+      console.warn("[Appt][create] donor profile not found for user", req.user?.id);
+      return res.status(404).json({ error: "Donor profile not found. Please complete registration first." });
     }
 
     // --- Eligibility checks ---
@@ -31,40 +32,32 @@ export const createAppointment = async (req, res) => {
         )
       : Infinity;
 
-    const isEligible =
-      donor.weight >= 50 &&
-      donor.hemoglobinLevel >= 12.5 &&
-      (!donor.diseases || donor.diseases.length === 0) &&
-      lastDonationGap >= 90;
+    // Normalize diseases: treat ["none"] or empty strings as no disease
+    const cleanDiseases = (donor.diseases || []).filter(
+      (d) => d && String(d).trim().toLowerCase() !== "none"
+    );
+
+    // Use donor.eligible flag established at registration + donation gap
+    const isEligible = donor.eligible && lastDonationGap >= 90 && cleanDiseases.length === 0;
 
     if (!isEligible) {
       let reason = "You are not eligible to donate blood right now.";
-      if (donor.weight < 50)
-        reason = "Your weight must be at least 50 kg to donate blood.";
-      else if (donor.hemoglobinLevel < 12.5)
-        reason = "Your hemoglobin level must be at least 12.5 g/dL.";
-      else if (donor.diseases && donor.diseases.length > 0)
-        reason = "You have disqualifying medical conditions.";
-      else if (lastDonationGap < 90)
-        reason = `You must wait ${90 - lastDonationGap} more days before donating again.`;
-
+      if (cleanDiseases.length > 0) reason = "You have disqualifying medical conditions.";
+      else if (lastDonationGap < 90) reason = `You must wait ${90 - lastDonationGap} more days before donating again.`;
+      console.warn("[Appt][create] ineligible:", { user: req.user?.id, donorEligible: donor.eligible, lastDonationGap, cleanDiseases });
       return res.status(400).json({ error: reason });
     }
 
     // --- Create appointment ---
-    const appointment = new Appointment({
-      donor: req.user.id,
-      date,
-      hospital,
-      location,
-      status: "pending",
-    });
+    const normalizedLocation = {
+      type: location.type || "Point",
+      coordinates: location.coordinates,
+    };
+
+    const appointment = new Appointment({ donor: req.user.id, date, hospital, location: normalizedLocation, status: "pending" });
 
     await appointment.save();
-
-    // Tentatively update last donation date (admin confirmation later)
-    donor.lastDonationDate = date;
-    await donor.save();
+    console.log("[Appt][create] created:", appointment._id);
 
     res.status(201).json({
       message: "Appointment booked successfully.",
@@ -90,11 +83,33 @@ export const getAppointments = async (req, res) => {
 // Admin: Get all appointments with donor details
 export const getAllAppointments = async (req, res) => {
   try {
-    const appointments = await Appointment.find()
-      .populate("donor", "name email bloodGroup lastDonationDate") // ✅ include lastDonationDate
-      .sort({ date: -1 }); // optional: newest first
+    console.log("[Appt][all] requested by:", req.user?.id);
 
-    res.json(appointments);
+    // Step 1: populate donor as User (name, email)
+    const appts = await Appointment.find()
+      .populate("donor", "name email")
+      .sort({ date: -1 })
+      .lean();
+
+    // Step 2: join donor profile from Donor collection to fetch bloodGroup and lastDonationDate
+    const userIds = appts.map((a) => a.donor?._id).filter(Boolean);
+    const donorProfiles = await Donor.find({ user: { $in: userIds } })
+      .select("user bloodGroup lastDonationDate")
+      .lean();
+    const donorByUser = new Map(donorProfiles.map((d) => [String(d.user), d]));
+
+    const merged = appts.map((a) => {
+      const d = a.donor ? { ...a.donor } : null;
+      const profile = a.donor ? donorByUser.get(String(a.donor._id)) : null;
+      if (d && profile) {
+        d.bloodGroup = profile.bloodGroup;
+        d.lastDonationDate = profile.lastDonationDate;
+      }
+      return { ...a, donor: d };
+    });
+
+    console.log("[Appt][all] returned count:", merged.length);
+    res.json(merged);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -129,11 +144,16 @@ export const approveDonation = async (req, res) => {
       { upsert: true, new: true, runValidators: true }
     );
 
-    console.log("✅ Inventory updated:", inventoryUpdate);
+    console.log("[Appt][approve] inventory updated:", inventoryUpdate);
 
     // Step 5: Update appointment status
     appointment.status = "completed";
     await appointment.save();
+
+    // Update donor's last donation date to the appointment date
+    donor.lastDonationDate = appointment.date;
+    await donor.save();
+    console.log("[Appt][approve] appointment completed and donor updated:", { appointmentId: appointment._id, donorId: donor._id });
 
     res.json({ message: "Donation approved successfully" });
 
